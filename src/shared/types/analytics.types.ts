@@ -1,4 +1,4 @@
-import type { RiskLevel, TimeSeriesPoint } from '@/shared/types/common.types'
+import type { RiskLevel } from '@/shared/types/common.types'
 
 export interface AnalyticsOverview {
   healthScore: number

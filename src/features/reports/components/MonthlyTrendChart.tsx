@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
 import { useMonthlyTrend, useReportStats } from '../hooks/useReports'
 import { useTranslation } from '@/shared/hooks/useTranslation'

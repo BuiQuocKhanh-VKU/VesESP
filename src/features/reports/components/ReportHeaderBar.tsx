@@ -1,15 +1,15 @@
-import { FileText, Wrench, Ship, Clock } from 'lucide-react'
-import { useReports } from '../hooks/useReports'
-import { useSystemStore } from '@/store/useSystemStore'
-import { useUTCClock } from '@/shared/hooks/useUTCClock'
-import { useTranslation } from '@/shared/hooks/useTranslation'
+import { FileText, Wrench, Ship, Clock } from "lucide-react";
+import { useReports } from "../hooks/useReports";
+import { useSystemStore } from "@/store/useSystemStore";
+import { useUTCClock } from "@/shared/hooks/useUTCClock";
+import { useTranslation } from "@/shared/hooks/useTranslation";
 
 export const ReportHeaderBar = () => {
-    const { data: reports } = useReports()
-    const vessel = useSystemStore(s => s.vessel)
-    const { timeString, dateString } = useUTCClock()
+    const { data: reports } = useReports();
+    const vessel = useSystemStore((s) => s.vessel);
+    const { timeString, dateString } = useUTCClock();
 
-    const { t, language } = useTranslation()
+    const { t } = useTranslation();
 
     return (
         <div className="flex items-center gap-4 px-5 py-3 rounded-xl border border-[var(--bg-border)] bg-[var(--bg-card)]">
@@ -22,7 +22,9 @@ export const ReportHeaderBar = () => {
                     <p className="text-xs font-bold text-[var(--text-primary)] tracking-wide">
                         {t.reports.title}
                     </p>
-                    <p className="text-[9px] text-[var(--text-muted)]">Document management system</p>
+                    <p className="text-[9px] text-[var(--text-muted)]">
+                        Document management system
+                    </p>
                 </div>
             </div>
 
@@ -42,9 +44,11 @@ export const ReportHeaderBar = () => {
 
             {/* Latest Report */}
             <div>
-                <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider">{t.reports.latestReport}</p>
+                <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider">
+                    {t.reports.latestReport}
+                </p>
                 <p className="text-xs font-semibold text-[var(--text-primary)]">
-                    {reports?.[0]?.dateGenerated ?? 'May 27, 2024 14:15'} UTC
+                    {reports?.[0]?.dateGenerated ?? "May 27, 2024 14:15"} UTC
                 </p>
             </div>
 
@@ -57,7 +61,9 @@ export const ReportHeaderBar = () => {
                     <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider">
                         {t.reports.maintenance}
                     </p>
-                    <p className="text-xl font-bold font-mono text-[var(--text-primary)]">23</p>
+                    <p className="text-xl font-bold font-mono text-[var(--text-primary)]">
+                        23
+                    </p>
                 </div>
             </div>
 
@@ -67,38 +73,51 @@ export const ReportHeaderBar = () => {
                 <div className="flex items-center gap-2">
                     <Ship className="w-4 h-4 text-[var(--text-muted)]" />
                     <div>
-                        <p className="text-[10px] text-[var(--text-muted)]">{t.system.vessel}</p>
-                        <p className="text-xs font-semibold text-[var(--text-primary)]">{vessel.name}</p>
+                        <p className="text-[10px] text-[var(--text-muted)]">
+                            {t.system.vessel}
+                        </p>
+                        <p className="text-xs font-semibold text-[var(--text-primary)]">
+                            {vessel.name}
+                        </p>
                     </div>
                 </div>
                 <div className="w-px h-10 bg-[var(--bg-border)]" />
                 <div className="flex items-center gap-2">
                     <Clock className="w-4 h-4 text-[var(--text-muted)]" />
                     <div>
-                        <p className="text-[10px] text-[var(--text-muted)]">{t.system.utc}</p>
-                        <p className="text-sm font-bold font-mono text-[var(--accent-cyan)]">{timeString}</p>
-                        <p className="text-[9px] text-[var(--text-muted)]">{dateString}</p>
+                        <p className="text-[10px] text-[var(--text-muted)]">
+                            {t.system.utc}
+                        </p>
+                        <p className="text-sm font-bold font-mono text-[var(--accent-cyan)]">
+                            {timeString}
+                        </p>
+                        <p className="text-[9px] text-[var(--text-muted)]">
+                            {dateString}
+                        </p>
                     </div>
                 </div>
 
                 {/* Action buttons */}
                 <div className="w-px h-10 bg-[var(--bg-border)]" />
                 <div className="flex items-center gap-2">
-                    {[t.reports.generateReport, t.reports.exportPdf, t.reports.share].map((label, i) => (
+                    {[
+                        t.reports.generateReport,
+                        t.reports.exportPdf,
+                        t.reports.share,
+                    ].map((label, i) => (
                         <button
                             key={label}
                             className={[
-                                'px-3 py-1.5 rounded-lg text-[10px] font-semibold transition-all',
+                                "px-3 py-1.5 rounded-lg text-[10px] font-semibold transition-all",
                                 i === 0
-                                    ? 'bg-[var(--accent-cyan)] text-[var(--bg-base)] hover:opacity-90'
-                                    : 'border border-[var(--bg-border)] text-[var(--text-secondary)] hover:border-[var(--accent-cyan)] hover:text-[var(--accent-cyan)]',
-                            ].join(' ')}
-                        >
+                                    ? "bg-[var(--accent-cyan)] text-[var(--bg-base)] hover:opacity-90"
+                                    : "border border-[var(--bg-border)] text-[var(--text-secondary)] hover:border-[var(--accent-cyan)] hover:text-[var(--accent-cyan)]",
+                            ].join(" ")}>
                             {label}
                         </button>
                     ))}
                 </div>
             </div>
         </div>
-    )
-}
+    );
+};

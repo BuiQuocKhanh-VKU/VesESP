@@ -22,7 +22,7 @@ const timelinePoints = [
 
 export const AnomalyDetection = () => {
     const { data: anomalies, isLoading } = useAnomalyEvents()
-    const [selected, setSelected] = useState<AnomalyEvent | null>(null)
+    const [selected] = useState<AnomalyEvent | null>(null)
     const latest = anomalies?.[0] ?? null
 
     const displayed = selected ?? latest

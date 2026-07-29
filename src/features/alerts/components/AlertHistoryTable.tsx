@@ -1,7 +1,6 @@
 import { ChevronsUp } from 'lucide-react'
 import { AlertSeverityBadge } from './AlertSeverityBadge'
 import { useAlertHistory } from '../hooks/useAlerts'
-import type { AlertStatus } from '../types/alert.types'
 import { useTranslation } from '@/shared/hooks/useTranslation'
 
 const getStatusConfig = (t: any) => ({
