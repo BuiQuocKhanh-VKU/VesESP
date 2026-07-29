@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import {
     LineChart, Line, XAxis, YAxis, Tooltip,
-    ResponsiveContainer, CartesianGrid, Legend,
+    ResponsiveContainer, CartesianGrid,
 } from 'recharts'
 import { Calendar } from 'lucide-react'
 import { Card } from '@/shared/components/ui/Card'
@@ -11,16 +11,16 @@ import { useTranslation } from '@/shared/hooks/useTranslation'
 
 const timeRanges: TimeRange[] = ['1H', '6H', '12H', '24H', '7D']
 
-
-
 const CustomTooltip = ({ active, payload, label }: any) => {
     if (!active || !payload?.length) return null
+
     return (
         <div className="rounded-lg border border-[var(--bg-border)] bg-[var(--bg-surface)] p-2.5 text-[10px] shadow-xl">
             <p className="text-[var(--text-muted)] mb-1.5 font-mono">{label}</p>
+
             {payload.map((p: any) => (
                 <p key={p.dataKey} className="font-mono" style={{ color: p.color }}>
-                    {p.name}: {typeof p.value === 'number' ? p.value.toFixed(2) : p.value}
+                    {p.name}: {typeof p.value === 'number' ? p.value.toFixed(3) : p.value}
                 </p>
             ))}
         </div>
@@ -35,16 +35,49 @@ export const MultiParamTrendChart = () => {
     const chartData = data?.map(d => ({
         ...d,
         time: new Date(d.timestamp).toLocaleTimeString('en', {
-            hour: '2-digit', minute: '2-digit', hour12: false,
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false,
         }),
     })) ?? []
 
-    const lines = [
-        { key: 'temperature', label: t.dashboard.temperature + ' (°C)', color: 'var(--chart-temp)' },
-        { key: 'vibration', label: t.dashboard.vibration + ' (g)', color: 'var(--chart-vibration)' },
-        { key: 'humidity', label: t.dashboard.humidity + ' (%)', color: 'var(--chart-humidity)' },
-        { key: 'power', label: 'Power (kW)', color: 'var(--chart-power)' },
+    const allLines = [
+        {
+            key: 'temperature',
+            label: t.dashboard.temperature + ' (°C)',
+            color: 'var(--chart-temp)',
+            yAxisId: 'left',
+        },
+        {
+            key: 'vibration',
+            label: t.dashboard.vibration + ' (RMS)',
+            color: 'var(--chart-vibration)',
+            yAxisId: 'right',
+        },
+        {
+            key: 'humidity',
+            label: t.dashboard.humidity + ' (%)',
+            color: 'var(--chart-humidity)',
+            yAxisId: 'left',
+        },
+        {
+            key: 'power',
+            label: 'Power (kW)',
+            color: 'var(--chart-power)',
+            yAxisId: 'left',
+        },
     ]
+
+    // Chỉ hiện humidity / power khi có dữ liệu thật.
+    // Temperature và vibration luôn hiện.
+    const lines = allLines.filter(line => {
+        if (line.key === 'temperature' || line.key === 'vibration') return true
+
+        return chartData.some((item: any) => {
+            const value = item[line.key]
+            return typeof value === 'number' && value !== 0
+        })
+    })
 
     return (
         <Card className="flex flex-col gap-3">
@@ -54,6 +87,7 @@ export const MultiParamTrendChart = () => {
                     <span className="w-5 h-5 rounded flex items-center justify-center bg-[var(--accent-cyan)] bg-opacity-20 text-[10px] font-bold text-[var(--accent-cyan)]">
                         1
                     </span>
+
                     <h2 className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-widest">
                         {t.analytics.trendAnalysis}
                     </h2>
@@ -74,6 +108,7 @@ export const MultiParamTrendChart = () => {
                             {r}
                         </button>
                     ))}
+
                     <Calendar className="w-4 h-4 text-[var(--text-muted)] ml-1" />
                 </div>
             </div>
@@ -93,8 +128,16 @@ export const MultiParamTrendChart = () => {
                 <div className="h-56 rounded-lg bg-[var(--bg-surface)] animate-pulse" />
             ) : (
                 <ResponsiveContainer width="100%" height={220}>
-                    <LineChart data={chartData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="var(--bg-border)" vertical={false} />
+                    <LineChart
+                        data={chartData}
+                        margin={{ top: 4, right: 18, left: -18, bottom: 0 }}
+                    >
+                        <CartesianGrid
+                            strokeDasharray="3 3"
+                            stroke="var(--bg-border)"
+                            vertical={false}
+                        />
+
                         <XAxis
                             dataKey="time"
                             tick={{ fontSize: 9, fill: 'var(--text-muted)' }}
@@ -102,22 +145,40 @@ export const MultiParamTrendChart = () => {
                             axisLine={false}
                             interval="preserveStartEnd"
                         />
+
+                        {/* Trục trái: nhiệt độ */}
                         <YAxis
+                            yAxisId="left"
                             tick={{ fontSize: 9, fill: 'var(--text-muted)' }}
                             tickLine={false}
                             axisLine={false}
+                            domain={['auto', 'auto']}
                         />
+
+                        {/* Trục phải: rung động */}
+                        <YAxis
+                            yAxisId="right"
+                            orientation="right"
+                            tick={{ fontSize: 9, fill: 'var(--text-muted)' }}
+                            tickLine={false}
+                            axisLine={false}
+                            domain={[0, 'auto']}
+                        />
+
                         <Tooltip content={<CustomTooltip />} />
-                        {lines.map(({ key, label, color }) => (
+
+                        {lines.map(({ key, label, color, yAxisId }) => (
                             <Line
                                 key={key}
+                                yAxisId={yAxisId}
                                 type="monotone"
                                 dataKey={key}
                                 stroke={color}
-                                strokeWidth={1.5}
+                                strokeWidth={key === 'vibration' ? 2 : 1.5}
                                 dot={false}
                                 name={label}
                                 isAnimationActive={false}
+                                connectNulls
                             />
                         ))}
                     </LineChart>

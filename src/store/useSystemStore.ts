@@ -11,7 +11,7 @@ interface SystemStore {
 
 export const useSystemStore = create<SystemStore>((set) => ({
   vessel: {
-    name: 'Oceanic Voyager',   // ← đổi ở đây là xong
+    name: 'Quốc Khánh 01',   
     imo: '9876543',
     status: 'ACTIVE',
   },

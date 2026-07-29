@@ -78,7 +78,7 @@ export const AnomalyDetection = () => {
                             </span>
                         </div>
                         <p className="text-[11px] font-semibold text-[var(--text-primary)] leading-tight">
-                            {displayed.parameter[language]} anomaly detected at {displayed.timestamp}
+                            {displayed.parameter[language]} lúc {displayed.timestamp}
                         </p>
                         <span
                             className="inline-flex items-center gap-1 mt-2 px-2 py-0.5 rounded text-[9px] font-bold border"

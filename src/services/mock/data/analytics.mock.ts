@@ -9,9 +9,9 @@ import type {
 
 export const mockAnalyticsOverview: AnalyticsOverview = {
     healthScore: 92,
-    healthLabel: { en: 'Excellent',  vi: 'Xuất sắc'     },
-    anomalyScore: 28,
-    anomalyLabel: { en: 'Moderate',  vi: 'Trung bình'   },
+    healthLabel: { en: 'Excellent',  vi: 'Tốt'     },
+    anomalyScore: 54,
+    anomalyLabel: { en: 'Moderate',  vi: 'Cảnh báo'   },
 }
 
 export const mockTrendData: TrendDataPoint[] = Array.from({ length: 48 }, (_, i) => ({
@@ -53,7 +53,7 @@ export const mockAnomalyEvents: AnomalyEvent[] = [
 ]
 
 export const mockBehaviorMetrics: BehaviorMetric[] = [
-    { label: { en: 'Temperature', vi: 'Nhiệt độ'  }, unit: '°C', current: 71.6, normalMin: 50, normalMax: 90  },
+    { label: { en: 'Temperature', vi: 'Nhiệt độ'  }, unit: '°C', current: 71.2, normalMin: 50, normalMax: 90  },
     { label: { en: 'Vibration',   vi: 'Rung động' }, unit: 'g',  current: 0.18, normalMin: 0,  normalMax: 0.5 },
     { label: { en: 'Humidity',    vi: 'Độ ẩm'     }, unit: '%',  current: 62,   normalMin: 30, normalMax: 80  },
 ]
