@@ -1,13 +1,11 @@
-import { MockDashboardService } from './mock/MockDashboardService'
-import { MockAlertService }     from './mock/MockAlertService'
-import { MockAnalyticsService } from './mock/MockAnalyticsService'
-import { MockReportService }    from './mock/MockReportService'
-import { MockSettingsService }  from './mock/MockSettingsService'
+import { DashboardService } from "./mock/dashboardService";
+import { AlertService } from "./mock/alertService";
+import { AnalyticsService } from "./mock/analyticsService";
+import { ReportService } from "./mock/reportService";
+import { SettingsService } from "./mock/settingsService";
 
-const isMock = import.meta.env.VITE_USE_MOCK === 'true'
-
-export const dashboardService = isMock ? new MockDashboardService() : new MockDashboardService()
-export const alertService     = isMock ? new MockAlertService()     : new MockAlertService()
-export const analyticsService = isMock ? new MockAnalyticsService() : new MockAnalyticsService()
-export const reportService    = isMock ? new MockReportService()    : new MockReportService()
-export const settingsService  = isMock ? new MockSettingsService()  : new MockSettingsService()
+export const dashboardService = new DashboardService();
+export const alertService = new AlertService();
+export const analyticsService = new AnalyticsService();
+export const reportService = new ReportService();
+export const settingsService = new SettingsService();
