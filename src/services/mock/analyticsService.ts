@@ -7,19 +7,16 @@ import {
     mockBehaviorMetrics,
     mockRecommendations,
 } from "./data/analytics.mock";
+import { SENSOR_THRESHOLDS } from "@/shared/constants/thresholds";
+import {
+    getTemperatureRiskLevel,
+    getTemperatureStatus,
+} from "@/shared/utils/sensorStatus";
 
 const FIREBASE_DB_URL =
     "https://vesesp-predictive-maintenance-default-rtdb.asia-southeast1.firebasedatabase.app";
 
 const VESSEL_ID = "vessel_001";
-
-// ================== TEMP THRESHOLDS ==================
-// < 35°C      → low / Thông tin
-// >= 35°C     → medium / Cảnh báo
-// >= 36.5°C   → high / Nguy hiểm
-const TEMP_WARNING_C = 35;
-const TEMP_DANGER_C = 36.5;
-const TEMP_BASE_C = 25;
 
 type FirebaseTelemetry = {
     id?: string;
@@ -70,45 +67,39 @@ const toDisplayTimestamp = (timestamp?: number, index = 0, total = 1) => {
     return new Date(timestamp).toISOString();
 };
 
-const getRiskLevel = (score: number) => {
-    if (score >= 70) return "high" as const;
-    if (score >= 35) return "medium" as const;
-    return "low" as const;
-};
-
 const getTemperatureRiskScore = (temperature?: number | null) => {
-    if (temperature == null || !Number.isFinite(temperature)) return 0;
+    if (temperature == null || !Number.isFinite(temperature)) {
+        return 0;
+    }
 
-    // Dưới 25°C coi như 0 điểm.
-    if (temperature <= TEMP_BASE_C) return 0;
+    const threshold = SENSOR_THRESHOLDS.temperature;
+    const baseTemperature = 25;
 
-    // 25°C → 35°C: thanh vẫn chạy nhưng vẫn là Thông tin.
-    // Điểm 0 → 34.
-    if (temperature < TEMP_WARNING_C) {
+    if (temperature <= baseTemperature) {
+        return 0;
+    }
+
+    if (temperature < threshold.warning) {
         const progress =
-            (temperature - TEMP_BASE_C) / (TEMP_WARNING_C - TEMP_BASE_C);
+            (temperature - baseTemperature) /
+            (threshold.warning - baseTemperature);
 
         return Math.round(progress * 34);
     }
 
-    // 35°C → 36.5°C: Cảnh báo.
-    // Điểm 35 → 69.
-    if (temperature < TEMP_DANGER_C) {
+    if (temperature < threshold.danger) {
         const progress =
-            (temperature - TEMP_WARNING_C) / (TEMP_DANGER_C - TEMP_WARNING_C);
+            (temperature - threshold.warning) /
+            (threshold.danger - threshold.warning);
 
         return Math.round(35 + progress * 34);
     }
 
-    // Từ 36.5°C trở lên: Nguy hiểm.
     return 100;
 };
-
-const getTemperatureRiskLevel = (temperature?: number | null) => {
-    if (temperature == null || !Number.isFinite(temperature))
-        return "low" as const;
-    if (temperature >= TEMP_DANGER_C) return "high" as const;
-    if (temperature >= TEMP_WARNING_C) return "medium" as const;
+const getRiskLevel = (score: number) => {
+    if (score >= 70) return "high" as const;
+    if (score >= 35) return "medium" as const;
     return "low" as const;
 };
 
@@ -329,20 +320,16 @@ export class AnalyticsService {
                 labelText.includes("temperature") ||
                 labelText.includes("nhiệt")
             ) {
-                const tempStatus =
-                    temperature >= 36.5
-                        ? "danger"
-                        : temperature >= 35
-                          ? "warning"
-                          : "normal";
+                const threshold = SENSOR_THRESHOLDS.temperature;
+                const status = getTemperatureStatus(temperature);
 
                 return {
                     ...item,
                     current: Number(temperature.toFixed(2)),
-                    normalMin: 0,
-                    normalMax: 100,
-                    unit: "°C",
-                    status: tempStatus,
+                    normalMin: threshold.normalMin,
+                    normalMax: threshold.normalMax,
+                    unit: threshold.unit,
+                    status,
                 };
             }
 

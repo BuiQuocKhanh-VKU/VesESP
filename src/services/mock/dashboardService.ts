@@ -1,4 +1,6 @@
 import { mockSensorCards, mockSystemEvents } from "./data/sensors.mock";
+import { SENSOR_THRESHOLDS } from "@/shared/constants/thresholds";
+import { getTemperatureStatus } from "@/shared/utils/sensorStatus";
 
 const FIREBASE_DB_URL =
     "https://vesesp-predictive-maintenance-default-rtdb.asia-southeast1.firebasedatabase.app";
@@ -53,13 +55,16 @@ export class DashboardService {
         return mockSensorCards.map((card) => {
             if (card.id === "temperature") {
                 const value = latest.temperature ?? card.value;
+                const threshold = SENSOR_THRESHOLDS.temperature;
+                const status = getTemperatureStatus(value);
 
                 return {
                     ...card,
                     value: Number(value.toFixed(2)),
-                    unit: "°C",
-                    isWithinRange:
-                        value >= card.normalMin && value <= card.normalMax,
+                    unit: threshold.unit,
+                    normalMin: threshold.normalMin,
+                    normalMax: threshold.normalMax,
+                    isWithinRange: status === "normal",
                     sparkline: [
                         ...card.sparkline.slice(1),
                         {
