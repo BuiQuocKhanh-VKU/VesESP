@@ -14,21 +14,13 @@ export const SyncButton = ({ onSynced }: SyncButtonProps) => {
         try {
             setIsSyncing(true);
 
-            await queryClient.invalidateQueries({
-                queryKey: ["dashboard"],
-            });
-
-            await queryClient.invalidateQueries({
-                queryKey: ["analytics"],
-            });
-
             await queryClient.refetchQueries({
                 type: "active",
             });
 
             onSynced?.(new Date());
         } catch (error) {
-            console.error("Đồng bộ dữ liệu thất bại:", error);
+            console.error("Không thể đồng bộ dữ liệu:", error);
         } finally {
             setIsSyncing(false);
         }
@@ -39,19 +31,7 @@ export const SyncButton = ({ onSynced }: SyncButtonProps) => {
             type="button"
             onClick={handleSync}
             disabled={isSyncing}
-            className="
-                flex items-center justify-center gap-2
-                w-full rounded-full border
-                border-[var(--accent-cyan)]
-                px-3 py-1.5
-                text-[10px] font-semibold
-                text-[var(--accent-cyan)]
-                transition-all
-                hover:bg-[var(--accent-cyan)]
-                hover:text-[var(--bg-base)]
-                disabled:cursor-not-allowed
-                disabled:opacity-60
-            ">
+            className="flex w-full items-center justify-center gap-2 rounded-full border border-[var(--accent-cyan)] px-3 py-1.5 text-[10px] font-semibold text-[var(--accent-cyan)] transition-all hover:bg-[var(--accent-cyan)] hover:text-[var(--bg-base)] disabled:cursor-not-allowed disabled:opacity-60">
             <RefreshCw
                 className={`h-3.5 w-3.5 ${isSyncing ? "animate-spin" : ""}`}
             />

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Thermometer, Activity, Droplets, RefreshCw } from "lucide-react";
 
 import { Card } from "@/shared/components/ui/Card";
@@ -21,6 +21,26 @@ const colorMap: Record<string, string> = {
     temperature: "var(--accent-cyan)",
     vibration: "var(--status-warn)",
     humidity: "var(--status-ok)",
+};
+
+const formatElapsedTime = (seconds: number, language: "en" | "vi") => {
+    if (seconds < 60) {
+        return language === "vi"
+            ? `${seconds} giây trước`
+            : `${seconds} seconds ago`;
+    }
+
+    const minutes = Math.floor(seconds / 60);
+
+    if (minutes < 60) {
+        return language === "vi"
+            ? `${minutes} phút trước`
+            : `${minutes} minutes ago`;
+    }
+
+    const hours = Math.floor(minutes / 60);
+
+    return language === "vi" ? `${hours} giờ trước` : `${hours} hours ago`;
 };
 
 const SensorCardItem = ({
@@ -88,27 +108,25 @@ const SensorCardItem = ({
 
 const LastSyncCard = ({
     t,
+    language,
     lastSync,
+    secondsSinceSync,
     onSynced,
 }: {
     t: ReturnType<typeof useTranslation>["t"];
+    language: "en" | "vi";
     lastSync: Date;
+    secondsSinceSync: number;
     onSynced: (time: Date) => void;
 }) => {
-    const timeString = lastSync.toLocaleTimeString("en-GB", {
+    const timeString = lastSync.toLocaleTimeString("vi-VN", {
         hour: "2-digit",
         minute: "2-digit",
         second: "2-digit",
         hour12: false,
-        timeZone: "UTC",
     });
 
-    const dateString = lastSync.toLocaleDateString("en-GB", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-        timeZone: "UTC",
-    });
+    const dateString = lastSync.toLocaleDateString("vi-VN");
 
     return (
         <Card className="flex flex-col gap-2 flex-1">
@@ -127,12 +145,12 @@ const LastSyncCard = ({
                     {timeString}
                 </span>
 
-                <span className="text-xs text-[var(--text-muted)] ml-1">
-                    UTC
-                </span>
-
                 <p className="text-[10px] text-[var(--text-muted)] mt-0.5">
                     {dateString}
+                </p>
+
+                <p className="text-[10px] text-[var(--accent-cyan)] mt-1">
+                    {formatElapsedTime(secondsSinceSync, language)}
                 </p>
             </div>
 
@@ -146,6 +164,24 @@ export const EngineHealthOverview = () => {
     const { t, language } = useTranslation();
 
     const [lastSync, setLastSync] = useState(new Date());
+    const [secondsSinceSync, setSecondsSinceSync] = useState(0);
+
+    useEffect(() => {
+        const timer = window.setInterval(() => {
+            const elapsed = Math.floor(
+                (Date.now() - lastSync.getTime()) / 1000,
+            );
+
+            setSecondsSinceSync(elapsed);
+        }, 1000);
+
+        return () => window.clearInterval(timer);
+    }, [lastSync]);
+
+    const handleSynced = (time: Date) => {
+        setLastSync(time);
+        setSecondsSinceSync(0);
+    };
 
     if (isLoading) {
         return (
@@ -178,8 +214,10 @@ export const EngineHealthOverview = () => {
 
                 <LastSyncCard
                     t={t}
+                    language={language}
                     lastSync={lastSync}
-                    onSynced={setLastSync}
+                    secondsSinceSync={secondsSinceSync}
+                    onSynced={handleSynced}
                 />
             </div>
         </div>
