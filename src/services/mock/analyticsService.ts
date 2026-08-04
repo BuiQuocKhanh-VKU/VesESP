@@ -5,13 +5,13 @@ import {
     mockRiskItems,
     mockAnomalyEvents,
     mockBehaviorMetrics,
-    mockRecommendations,
 } from "./data/analytics.mock";
 import { SENSOR_THRESHOLDS } from "@/shared/constants/thresholds";
 import {
     getTemperatureRiskLevel,
     getTemperatureStatus,
 } from "@/shared/utils/sensorStatus";
+import { buildRecommendations } from "@/services/mock/data/buildRecommendations";
 
 const FIREBASE_DB_URL =
     "https://vesesp-predictive-maintenance-default-rtdb.asia-southeast1.firebasedatabase.app";
@@ -381,32 +381,6 @@ export class AnalyticsService {
     async getRecommendations() {
         const latest = await getLatest();
 
-        if (!latest) return mockRecommendations;
-
-        const machineStatus = latest.machineStatus;
-        const sensorStatus = latest.sensorStatus;
-        const temperatureLevel = getTemperatureRiskLevel(latest.temperature);
-
-        if (
-            machineStatus === "DANGER" ||
-            sensorStatus === "SENSOR_ERROR" ||
-            temperatureLevel === "high"
-        ) {
-            return mockRecommendations.filter(
-                (item) => item.level === "danger",
-            );
-        }
-
-        if (
-            machineStatus === "WARNING" ||
-            sensorStatus === "SENSOR_WARNING" ||
-            temperatureLevel === "medium"
-        ) {
-            return mockRecommendations.filter(
-                (item) => item.level === "warning" || item.level === "info",
-            );
-        }
-
-        return mockRecommendations.filter((item) => item.level === "ok");
+        return buildRecommendations(latest);
     }
 }
