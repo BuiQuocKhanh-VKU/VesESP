@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createHashRouter } from "react-router-dom";
 import { AppShell } from "@/shared/components/layout/AppShell";
 import {
     DashboardPage,
@@ -8,7 +8,7 @@ import {
     SettingsPage,
 } from "./pages";
 
-export const router = createBrowserRouter(
+export const router = createHashRouter(
     [
         {
             path: "/",
@@ -22,7 +22,4 @@ export const router = createBrowserRouter(
             ],
         },
     ],
-    {
-        basename: "/VesESP",
-    },
 );
